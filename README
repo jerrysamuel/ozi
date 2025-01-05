@@ -1,0 +1,2 @@
+to ensure that this code works properly, you need to create a virtual enviroment the moment you clone this repository. once the open the "Ozi folder" create the virtual enviroment inside it, activate it and run 
+pip install -r requirements.txt to install all dependencies for the project.

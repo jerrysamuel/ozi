@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+</head>
+<body class="bg-blue-50 min-h-screen font-sans">
+    <!-- Dashboard Layout -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="bg-primary text-white w-64 p-6">
+            <h1 class="text-2xl font-bold mb-8">Sunshine Funitures Seller</h1>
+            <nav>
+                <ul class="space-y-4">
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-secondary">Dashboard</a></li>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-secondary">Products</a></li>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-secondary">Orders</a></li>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-secondary">Analytics</a></li>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-secondary">Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Header -->
+            <header class="bg-secondary text-white p-6 flex justify-between items-center">
+                <h2 class="text-2xl font-semibold">Seller Dashboard</h2>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-accent px-4 py-2 rounded hover:bg-blue-500">Notifications</button>
+                    <img src="https://via.placeholder.com/40" alt="Profile" class="rounded-full border-2 border-white">
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="flex-1 p-6">
+                <!-- Overview Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Card 1 -->
+                    <div class="bg-white shadow rounded p-6 flex items-center space-x-4">
+                        <div class="p-4 bg-blue-100 rounded-full">
+                            <svg class="w-8 h-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3M15 7h6m-3-3v6m-7 5H3m18-5a2 2 0 100-4 2 2 0 000 4z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary">Total Sales</h3>
+                            <p class="text-2xl font-bold">$12,345</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white shadow rounded p-6 flex items-center space-x-4">
+                        <div class="p-4 bg-blue-100 rounded-full">
+                            <svg class="w-8 h-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 21V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16m4-9l4 4m0 0l4-4m-4 4V3" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary">Products Sold</h3>
+                            <p class="text-2xl font-bold">1,245</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white shadow rounded p-6 flex items-center space-x-4">
+                        <div class="p-4 bg-blue-100 rounded-full">
+                            <svg class="w-8 h-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary">Active Listings</h3>
+                            <p class="text-2xl font-bold">350</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="bg-white shadow rounded p-6 flex items-center space-x-4">
+                        <div class="p-4 bg-blue-100 rounded-full">
+                            <svg class="w-8 h-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16l6-6 4 4 8-8" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary">Pending Orders</h3>
+                            <p class="text-2xl font-bold">28</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-primary mb-4">Sales Overview</h3>
+                    <div class="bg-white shadow rounded p-6">
+                        <div class="h-64 bg-blue-100 rounded">
+                            <!-- Placeholder for a Chart -->
+                            <p class="text-center text-gray-500 pt-24">[Sales Graph]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-primary mb-4">Recent Orders</h3>
+                    <div class="bg-white shadow rounded overflow-x-auto">
+                        <table class="min-w-full text-left">
+                            <thead class="bg-blue-100">
+                                <tr>
+                                    <th class="py-2 px-4">Order ID</th>
+                                    <th class="py-2 px-4">Date</th>
+                                    <th class="py-2 px-4">Customer</th>
+                                    <th class="py-2 px-4">Total</th>
+                                    <th class="py-2 px-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="py-2 px-4">#56789</td>
+                                    <td class="py-2 px-4">2024-12-25</td>
+                                    <td class="py-2 px-4">John Ebelebe</td>
+                                    <td class="py-2 px-4">$150.00</td>
+                                    <td class="py-2 px-4 text-green-600">Delivered</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-4">#56790</td>
+                                    <td class="py-2 px-4">2024-12-24</td>
+                                    <td class="py-2 px-4">Jane Oriji</td>
+                                    <td class="py-2 px-4">$75.00</td>
+                                    <td class="py-2 px-4 text-yellow-600">Processing</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-4">#56791</td>
+                                    <td class="py-2 px-4">13-7-20</td>
+                                    <td class="py-2 px-4">Jane Oriji</td>
+                                    <td class="py-2 px-4">$200.00</td>
+                                    <td class="py-2 px-4 text-red-600">Cancelled</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
