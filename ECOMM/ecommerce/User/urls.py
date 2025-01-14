@@ -8,5 +8,5 @@ urlpatterns = [
     path('user/logout/', views.signout_view, name='logout'),
     path('user/sellerdashboard/', views.sellerdashboard, name='sellerdashboard'),
     path('user/buyerdashboard/', views.buyerdashboard, name='buyerdashboard'),
-    path('index/',views.index, name='index' ),
+    path('',views.index, name='index' ),
 ]
