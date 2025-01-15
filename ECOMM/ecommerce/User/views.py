@@ -52,13 +52,17 @@ def buyerdashboard(request):
         total_orders = Decimal(allorders.count())
         allwishlist = Wishlist.objects.all()
         mywishlist = Decimal(allwishlist.count())
+        allreviews = Reviews.objects.all()
+        reviews = Decimal(allreviews.count())
+
     except:
         total_orders = Decimal(0)
         mywishlist = Decimal(0)
+        reviews = Decimal(0)
         
 
      
-    return render(request, 'User/buyerdashboard.html', {"total_orders":total_orders, "mywishlist":mywishlist},)
+    return render(request, 'User/buyerdashboard.html', {"total_orders":total_orders, "mywishlist":mywishlist, "reviews":reviews},)
 
 def index(request):
     return render(request, "User/index.html")    

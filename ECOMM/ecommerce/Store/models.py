@@ -56,7 +56,13 @@ class Reviews(models.Model):
 
 class Cart(models.Model):
     product_details = models.ForeignKey(Product, on_delete=models.CASCADE)
-    
+
+
+STATUS_CHOICES = (
+    ("processing", "Processing"),
+    ("cancelled","Cancelled"),
+    ("delivery", "Delivery"),
+)    
 class Orderdetails(models.Model):
     name = models.ForeignKey(Account, on_delete=models.DO_NOTHING, max_length=35)
     items = models.CharField(max_length=255, verbose_name="items")
@@ -64,6 +70,8 @@ class Orderdetails(models.Model):
     total_price = models.DecimalField(max_digits=20, decimal_places=3)
     location =models.CharField(max_length=100)
     date_ordered = models.DateTimeField(auto_now_add=True)
+    order_status = models.CharField(max_length=35, default="Processing", choices=STATUS_CHOICES)
+    
 
     
 
