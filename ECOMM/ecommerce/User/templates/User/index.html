@@ -14,6 +14,13 @@
                 <a href="{% url "signup"%}" class="text-sm  text-white dark:text-white hover:underline">Create Account</a>
                 <a href="{% url "signin"%}" class="text-sm  text-white dark:text-white hover:underline">Login</a>
             {% endif %}
+            <a href="{% url 'view_cart' %}" class="relative inline-block">
+            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
+              </svg>
+              <span class="text-xs text-red-800 absolute top-0 font-bold right-0">{{cart_count}}</span>
+            </a>
+              
         </div>
     </div>
 </nav>
@@ -38,68 +45,30 @@
     </div>
 </nav>
 
+<div class="bg-white border border-gray-200 mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 rounded-lg shadow">
+    {% for product in products %}
+    <div class="border-gray-200">
+        <a href="#">
+            <img class="mt-5 mx-auto w-16 md:w-32 lg:w-48" src="{{ product.image_url|default:'#' }}" alt="{{ product.name }}" />
+        </a>
+        <div class="p-2 text-center">
+            <a href="#">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">{{ product.name }}</h5>
+            </a>
+            <p class="text-gray-500">₦{{ product.price|floatformat:2 }}</p>
+            <form action="{% url 'add_to_cart' product.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                    Add to Cart
+                </button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center col-span-full text-gray-500">No products available.</p>
+    {% endfor %}
+</div>
 
-<div class=" bg-white border border-gray-200 mt-5 justify-between flex-nowrap flex flex-cols-4 mx-auto px-4 rounded-lg shadow">
-    <div class="border-gray-200">
-        <a href="#">
-            <img class="mt-5 mx-auto w-16 md:w-32 lg:w-48" src="https://img.freepik.com/free-photo/grey-comfortable-armchair-isolated-white-background_181624-25295.jpg?t=st=1736092667~exp=1736096267~hmac=a8e7a34934a9d83917ca5b87ca1dfa418d3e9001043dfb711c45696b249c278f&w=360" alt="imge here" />
-        </a>
-        <div class="p-2">
-            <a href="#">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">New Arrivals</h5>
-            </a>
-            
-            <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                Shop Now
-                
-            </a>
-        </div>
-    </div>
-   <div class="border-gray-200">
-    <a href="#">
-        <img class="mt-5 mx-auto w-16 md:w-32 lg:w-48" src="https://img.freepik.com/free-photo/grey-comfortable-armchair-isolated-white-background_181624-25295.jpg?t=st=1736092667~exp=1736096267~hmac=a8e7a34934a9d83917ca5b87ca1dfa418d3e9001043dfb711c45696b249c278f&w=360" alt="imge here" />
-    </a>
-    <div class="p-2">
-        <a href="#">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">New Arrivals</h5>
-        </a>
-        
-        <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-            Shop Now
-            
-        </a>
-    </div>
-   </div>
-    <div class="border-gray-200">
-        <a href="#">
-            <img class="mt-5 mx-auto w-16 md:w-32 lg:w-48" src="https://img.freepik.com/free-photo/grey-comfortable-armchair-isolated-white-background_181624-25295.jpg?t=st=1736092667~exp=1736096267~hmac=a8e7a34934a9d83917ca5b87ca1dfa418d3e9001043dfb711c45696b249c278f&w=360" alt="imge here" />
-        </a>
-        <div class="p-2">
-            <a href="#">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">New Arrivals</h5>
-            </a>
-            
-            <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                Shop Now
-                
-            </a>
-        </div>
-    </div>
-    <div class="border-black">
-        <a href="#">
-            <img class="mt-5 mx-auto w-16 md:w-32 lg:w-48" src="https://img.freepik.com/free-photo/grey-comfortable-armchair-isolated-white-background_181624-25295.jpg?t=st=1736092667~exp=1736096267~hmac=a8e7a34934a9d83917ca5b87ca1dfa418d3e9001043dfb711c45696b249c278f&w=360" alt="imge here" />
-        </a>
-        <div class="p-2">
-            <a href="#">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">New Arrivals</h5>
-            </a>
-            
-            <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                Shop Now
-                
-            </a>
-        </div>
-    </div>
     
 </div>
 

@@ -12,6 +12,8 @@ from .models import Account, Profile
 from django.views.generic import CreateView
 from Store.models import *
 from decimal import Decimal
+from django.db.models import Sum
+from Store.views import add_to_cart
 
 class SignUpView(CreateView):
     form_class = SignupForm
@@ -46,6 +48,7 @@ def sellerdashboard(request):
     return render(request, 'User/sellerdashboard.html')
 @login_required
 def buyerdashboard(request):
+    cart_count = Cart.objects.filter(user=request.user).aggregate(Sum('quantity'))['quantity__sum'] or 0
     try:
 
         allorders= Order.objects.all()
@@ -62,7 +65,10 @@ def buyerdashboard(request):
         
 
      
-    return render(request, 'User/buyerdashboard.html', {"total_orders":total_orders, "mywishlist":mywishlist, "reviews":reviews},)
+    return render(request, 'User/buyerdashboard.html', {"total_orders":total_orders, "mywishlist":mywishlist, "reviews":reviews, "cart_count": cart_count})
 
 def index(request):
-    return render(request, "User/index.html")    
+    cart_count = Cart.objects.filter(user=request.user).aggregate(Sum('quantity'))['quantity__sum']
+    
+
+    return render(request, "User/index.html", {"cart_count": cart_count})    

@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#1E3A8A', // Deep blue
+                    secondary: '#60A5FA', // Light blue
+                    accent: '#3B82F6', // Bright blue
+                },
+            },
+        },
+    }
+</script>
+</head>
+<body>
+  {% block messages %}
+  <div class="container mx-auto p-6">
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="p-4 rounded text-white 
+                    {% if message.tags == 'success' %}
+                        bg-green-500
+                    {% elif message.tags == 'info' %}
+                        bg-blue-500
+                    {% elif message.tags == 'warning' %}
+                        bg-yellow-500
+                    {% elif message.tags == 'error' %}
+                        bg-red-500
+                    {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+  {% endblock messages %}
+    {% block content %}
+  
+  {% endblock %}
+</body>
+</html>

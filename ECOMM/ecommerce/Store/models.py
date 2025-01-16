@@ -20,7 +20,7 @@ class Mystore(models.Model):
 class Product(models.Model):
     store = models.OneToOneField(Mystore, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    price = models.DecimalField(max_digits=15, decimal_places=3)
+    price = models.PositiveIntegerField(default=1)
     description = models.CharField(max_length=100)
     image = models.ImageField(upload_to='productimages')
 
@@ -31,7 +31,7 @@ class Order(models.Model):
     name = models.ForeignKey(Account, on_delete=models.CASCADE, max_length=25)
     product_name = models.ForeignKey(Product, on_delete=models.CASCADE, max_length=35)
     store = models.ForeignKey(Mystore, models.CASCADE, max_length=35)
-    quantity = models.DecimalField(decimal_places=1, max_digits=11)
+    quantity = models.PositiveIntegerField(default=1)
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return "order of "+ (self.product_name.name) + " by " +(self.name.username)
@@ -55,7 +55,16 @@ class Reviews(models.Model):
     description= models.CharField(max_length=200)
 
 class Cart(models.Model):
-    product_details = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="cart")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    added_on = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s cart - {self.product.name}"
+
+    def total_price(self):
+        return self.product.price * self.quantity
 
 
 STATUS_CHOICES = (

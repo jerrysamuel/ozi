@@ -20,12 +20,17 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
             <!-- Header -->
-            <header class="bg-blue-600 text-white p-4">
+            <header class="bg-blue-800 text-white p-4">
                 <div class="flex justify-between items-center">
                     <h2 class="text-xl font-semibold">Buyer Dashboard</h2>
-                    <div class="space-x-4">
-                        <button class="bg-green-500 px-4 py-2 rounded hover:bg-green-400">Notifications</button>
-                        <a href="{% url "logout" %}"><button class="bg-green-500 px-4 py-2 rounded hover:bg-green-400">Logout</button></a>
+                    <div class="space-x-3">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
+                          </svg>
+                          <span class="text-xs text-red-900 absolute top-10 right-50">{{cart_count}}</span>
+                        <button class="bg-green-500 px-2 py-1 rounded hover:bg-green-400">Notifications</button>
+                        <a href="{% url "logout" %}"><button class="bg-green-500 px-2 py-1 rounded hover:bg-green-400">Logout</button></a>
+                        
                     </div>
                 </div>
             </header>     
