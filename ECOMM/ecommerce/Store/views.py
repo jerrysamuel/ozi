@@ -43,3 +43,4 @@ def remove_from_cart(request, cart_item_id):
     cart_item.delete()
     messages.warning(request, f"Removed {cart_item.product.name} from your cart.")
     return redirect("view_cart")
+

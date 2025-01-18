@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth import get_user_model
 
 #
 class MyAccountManager(BaseUserManager):
@@ -51,7 +52,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username',]
 
-    objects = MyAccountManager()
+    objects = MyAccountManager() 
 
     def __str__(self):
         return self.email
@@ -77,3 +78,46 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+class Wallet(models.Model):
+    account = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name="wallet")
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # store balance as a decimal (e.g., 0.00)
+    escrow_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # funds in escrow
+    
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("Deposit amount must be greater than zero.")
+        self.balance += amount
+        self.save()
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError("Withdrawal amount must be greater than zero.")
+        if amount > self.balance:
+            raise ValueError("Insufficient balance.")
+        self.balance -= amount
+        self.save()
+
+    def add_to_escrow(self, amount):
+        """
+        Add funds to escrow balance.
+        """
+        if amount <= 0:
+            raise ValueError("Escrow amount must be greater than zero.")
+        self.balance -= amount
+        self.escrow_balance += amount
+        self.save()
+
+    def release_from_escrow(self, amount):
+        """
+        Release funds from escrow balance to the seller.
+        """
+        if amount <= 0:
+            raise ValueError("Release amount must be greater than zero.")
+        if amount > self.escrow_balance:
+            raise ValueError("Insufficient escrow balance.")
+        self.escrow_balance -= amount
+        self.save()
+
+    def __str__(self):
+        return f"Wallet for {self.account.email} with balance: {self.balance}, escrow: {self.escrow_balance}"

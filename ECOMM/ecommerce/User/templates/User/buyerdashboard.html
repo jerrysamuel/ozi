@@ -22,7 +22,7 @@
             <!-- Header -->
             <header class="bg-blue-800 text-white p-4">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold">Buyer Dashboard</h2>
+                    <h2 class="text-xl font-semibold">{{request.user.username}}'s Dashboard</h2>
                     <div class="space-x-3">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
@@ -38,7 +38,11 @@
             <!-- Content -->
             <main class="flex-1 p-6">
                 <!-- Cards Section -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 shadow rounded">
+                        <h3 class="text-lg font-semibold text-green-700">Wallet Balance</h3>
+                        <p class="text-2xl font-bold mt-2 text-green-900">{{wallet.balance}}</p>
+                    </div>
                     <!-- Card 1 -->
                     <div class="bg-white p-6 shadow rounded">
                         <h3 class="text-lg font-semibold text-green-700">Total Orders</h3>

@@ -8,7 +8,7 @@ import re
 from django.contrib.auth.views import LoginView
 from .forms import SignupForm, SigninForm
 from django.urls import reverse, reverse_lazy
-from .models import Account, Profile
+from .models import Account, Profile, Wallet
 from django.views.generic import CreateView
 from Store.models import *
 from decimal import Decimal
@@ -57,18 +57,21 @@ def buyerdashboard(request):
         mywishlist = Decimal(allwishlist.count())
         allreviews = Reviews.objects.all()
         reviews = Decimal(allreviews.count())
+        wallet = request.user.wallet
 
     except:
         total_orders = Decimal(0)
         mywishlist = Decimal(0)
         reviews = Decimal(0)
+        wallet = Decimal(0)
         
 
      
-    return render(request, 'User/buyerdashboard.html', {"total_orders":total_orders, "mywishlist":mywishlist, "reviews":reviews, "cart_count": cart_count})
+    return render(request, 'User/buyerdashboard.html', {"total_orders":total_orders, "mywishlist":mywishlist, "reviews":reviews, "cart_count": cart_count, 'wallet': wallet})
 
 def index(request):
     cart_count = Cart.objects.filter(user=request.user).aggregate(Sum('quantity'))['quantity__sum']
+    products = Product.objects.all()
     
 
-    return render(request, "User/index.html", {"cart_count": cart_count})    
+    return render(request, "User/index.html", {"cart_count": cart_count, 'products': products})    
