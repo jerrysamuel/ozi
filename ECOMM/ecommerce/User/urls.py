@@ -8,5 +8,8 @@ urlpatterns = [
     path('user/logout/', views.signout_view, name='logout'),
     path('user/sellerdashboard/', views.sellerdashboard, name='sellerdashboard'),
     path('user/buyerdashboard/', views.buyerdashboard, name='buyerdashboard'),
+    path("deposit-to-wallet/", views.deposit_to_wallet, name="deposit_to_wallet"),
+    path("verify-deposit/", views.verify_deposit, name="verify_deposit"),
     path('',views.index, name='index' ),
+    path('user/adminwallet/', views.adminwallet, name='adminwallet'),
 ]

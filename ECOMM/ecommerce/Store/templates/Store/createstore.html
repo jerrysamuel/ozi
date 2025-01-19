@@ -1,0 +1,22 @@
+{%extends "Store/base.html"%}
+{%block content%}
+<div class="max-w-lg mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-center mb-6">Create Store</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700">Store Name</label>
+            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" id="name" name="name" required>
+        </div>
+        <div class="mb-4">
+            <label for="cac_name" class="block text-gray-700">CAC Name</label>
+            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" id="cac_name" name="cac_name" required>
+        </div>
+        <div class="mb-4">
+            <label for="physicaladdress" class="block text-gray-700">Physical Address</label>
+            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" id="physicaladdress" name="physicaladdress" required>
+        </div>
+        <button type="submit" class="w-full bg-green-500 text-white py-2 rounded-md hover:bg-blue-600">Create Store</button>
+    </form>
+</div>
+{%endblock%}

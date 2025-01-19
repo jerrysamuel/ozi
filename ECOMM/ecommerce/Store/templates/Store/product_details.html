@@ -1,0 +1,29 @@
+{% extends "Store/base.html" %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <a href="{% url 'index' %}" class="inline-flex mb-4 items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Back</a>
+    <h1 class="text-4xl font-bold mb-5">Product Details</h1>
+    {% if product %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12">
+            <!-- Product Image -->
+            <div>
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full rounded-lg shadow-lg">
+            </div>
+            <!-- Product Details -->
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">{{ product.name }}</h2>
+                <p class="text-lg text-gray-500">₦{{ product.price }}</p>
+                <p class="text-lg text-gray-500">{{ product.description }}</p>
+                <form action="{% url 'add_to_cart' product.id %}" method="POST">
+                    {% csrf_token %}
+                    <button class="bg-green-500 text-white px-4 py-2 rounded-lg mt-4">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-center text-red-500">Product not found.</p>
+    {% endif %}
+    
+</div>
+{% endblock %}

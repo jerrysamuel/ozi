@@ -1,0 +1,68 @@
+{% extends 'Store/base.html' %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <a href="{% url 'index' %}" class="inline-flex mb-4 items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Back</a>
+    <h1 class="text-2xl font-bold mb-4">Checkout</h1>
+
+    <!-- Display cart items -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-bold mb-2">Your Cart</h2>
+        {% if cart_items %}
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="text-left">
+                        <th class="border-b p-2">Product</th>
+                        <th class="border-b p-2">Price</th>
+                        <th class="border-b p-2">Quantity</th>
+                        <th class="border-b p-2">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item, subtotal in item_subtotals %}
+                        <tr>
+                            <td class="border-b p-2">{{ item.product.name }}</td>
+                            <td class="border-b p-2">₦{{ item.product.price }}</td>
+                            <td class="border-b p-2">{{ item.quantity }}</td>
+                            <td class="border-b p-2">₦{{ subtotal|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-gray-500">Your cart is empty.</p>
+        {% endif %}
+    </div>
+
+    <!-- Display total amount -->
+    <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+        <h2 class="text-lg font-bold text-center">Total Amount</h2>
+        <p class="text-xl font-bold text-center text-green-500">₦{{ total_amount }}</p>
+    </div>
+
+    <!-- Checkout form -->
+    <form method="POST" class="mt-6 items-center">
+        {% csrf_token %}
+        <div class="items-center justify-center">
+            <div class="mb-4">
+                <label for="phone" class="block text-gray-700">Phone Number</label>
+                <input type="tel" class="w-full px-3 py-2 border mb-6 border-gray-300 rounded-md" id="phone" name="phone" required>
+            </div>
+             <div class="mb-4">   
+                <label for="address" class="block text-gray-700">Delivery Address</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" id="address" name="address" required>
+            </div>
+            <div class="mb-4">   
+                <label for="state" class="block text-gray-700">State</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" id="state" name="state" required>
+            </div>
+            <div class="">
+                <button class=" w-full bg-green-500 text-white  px-6 py-2 rounded-lg hover:bg-green-600" type="submit">
+                Confirm and Pay
+                </button>  
+            </div>
+        </div>
+        
+    </form>
+</div>
+{% endblock %}

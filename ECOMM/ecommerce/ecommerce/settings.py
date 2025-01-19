@@ -102,6 +102,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'User.Account' 
+
+LOGIN_URL = '/user/signin/'
+
+PAYSTACK_PUBLIC_KEY = "pk_test_41f4da68bc8fabfa011cb277835b7303a517a74f"
+PAYSTACK_SECRET_KEY = "sk_test_f11dbab5b4dd69ccc093ab277dbaafc76e710a9c"
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -118,6 +124,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static", "media"
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 # Default primary key field type

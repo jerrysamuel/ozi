@@ -66,18 +66,32 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
-
+    
 class Profile(models.Model):
     user = models.OneToOneField(Account, on_delete=models.CASCADE)
     fullname = models.CharField(max_length=50)
     age = models.CharField(max_length=3)
     address = models.CharField(max_length=150)
+    phone = models.CharField(max_length=15, default='080')
     state = models.CharField(max_length=40)
     bio = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(upload_to='profiles', blank=True, null=True)
 
     def __str__(self):
         return self.user.username
+    
+class Adminwallet(models.Model):
+     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # store balance as a decimal (e.g., 0.00)
+
+     def __str__(self):
+        return f"Admin Wallet with balance: {self.balance}"
+     
+     def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("Deposit amount must be greater than zero.")
+        self.balance += amount
+        self.save()
+     
     
 class Wallet(models.Model):
     account = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name="wallet")
@@ -116,8 +130,11 @@ class Wallet(models.Model):
             raise ValueError("Release amount must be greater than zero.")
         if amount > self.escrow_balance:
             raise ValueError("Insufficient escrow balance.")
-        self.escrow_balance -= amount
-        self.save()
+        else:
+            self.escrow_balance -= amount
+            self.save()
 
     def __str__(self):
         return f"Wallet for {self.account.email} with balance: {self.balance}, escrow: {self.escrow_balance}"
+
+

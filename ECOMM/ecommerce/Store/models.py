@@ -1,5 +1,7 @@
+from datetime import timezone
+from decimal import Decimal
 from django.db import models
-from User.models import Account
+from User.models import Account, Adminwallet
 
 from django.contrib.auth import get_user_model
 
@@ -17,6 +19,10 @@ class Mystore(models.Model):
 
     def verifications():
        pass
+
+    def product_count(self):
+        # Count products linked to this specific store
+        return Product.objects.filter(store=self).count()
 
 
 class Product(models.Model):
@@ -92,6 +98,19 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default=PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def count_completed_orders_for_seller(cls, seller):
+        """
+        Counts completed orders for a specific seller.
+        """
+        return cls.objects.filter(seller=seller, status=cls.COMPLETED).count()
+    @classmethod
+    def count_pending_orders_for_seller(cls, seller):
+        """
+        Counts pending orders for a specific seller.
+        """
+        return cls.objects.filter(seller=seller, status=cls.PENDING).count()
     
     def initiate_payment(self):
         """
@@ -106,17 +125,30 @@ class Order(models.Model):
 
     def complete_order(self):
         """
-        Completes the order, releases funds from escrow to the seller.
+        Complete the order: Charge admin fee and transfer remaining amount to seller.
         """
-        if self.status == self.PENDING:
-            self.status = self.COMPLETED
-            self.save()
-            seller_wallet = self.seller.wallet
-            seller_wallet.release_from_escrow(self.amount)
-            seller_wallet.deposit(self.amount)  # Add funds to seller's main wallet
-            return True
-        else:
-            raise ValueError("Order cannot be completed. It might already be completed or cancelled.")
+        if self.status != self.PENDING:
+            raise ValueError("Only pending orders can be completed.")
+
+        admin_wallet= Adminwallet.objects.get(id=1)  # Ensure admin wallet exists
+        escrow_fee = self.amount * Decimal("0.02")  # Calculate 2% fee
+        seller_earnings = self.amount - escrow_fee
+
+        # Ensure buyer wallet has enough escrow balance
+        if self.buyer.wallet.escrow_balance < self.amount:
+            raise ValueError("Insufficient escrow balance in buyer's wallet.")
+
+        # Release funds from escrow
+        self.buyer.wallet.release_from_escrow(self.amount)
+
+        # Admin fee deposit
+        admin_wallet.deposit(escrow_fee)
+
+        # Transfer remaining funds to seller
+        self.seller.wallet.deposit(seller_earnings)
+
+        self.status = self.COMPLETED
+        self.save()
 
     def cancel_order(self):
         """
@@ -132,6 +164,47 @@ class Order(models.Model):
             return True
         else:
             raise ValueError("Order cannot be cancelled. It might already be completed or cancelled.")
+        
+    def reject_delivery(self):
+        """
+        Reject the delivery and create a dispute.
+        """
+        if self.status != self.PENDING:
+            raise ValueError("Only pending orders can be rejected.")
+        # Create a dispute
+        Dispute.objects.create(
+            order=self,
+            buyer_email=self.buyer.email,
+            seller_email=self.seller.email,
+            status=Dispute.OPEN,
+        )
+        # Keep funds in escrow
+        self.save()
+    
+    def resolve_dispute(self, action):
+        """
+        Resolve the dispute by canceling or completing the order.
+        `action` can be 'cancel' or 'complete'.
+        """
+        dispute = self.dispute
+        if not dispute or dispute.status != Dispute.OPEN:
+            raise ValueError("No open dispute to resolve.")
+        if action == "cancel":
+            # Refund the buyer
+            self.buyer.wallet.deposit(self.amount)
+            dispute.mark_resolved()
+            self.status = self.CANCELLED
+        elif action == "complete":
+            # Release funds to seller and deduct admin fee
+            seller_share = self.amount * Decimal(0.98)  # 2% fee
+            admin_fee = self.amount * Decimal(0.02)
+            self.seller.wallet.deposit(seller_share)
+            Adminwallet.objects.get(id=1).deposit(admin_fee)
+            dispute.mark_resolved()
+            self.status = self.COMPLETED
+        else:
+            raise ValueError("Invalid action. Must be 'cancel' or 'complete'.")
+        self.save()
     
     def __str__(self):
         return f"Order {self.id}: {self.buyer.username} -> {self.seller.username}, Status: {self.status}"
@@ -141,3 +214,26 @@ class Reviews(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     rating = models.CharField(choices=RATING_CHOICES, default="1", max_length=6)
     description= models.CharField(max_length=200)
+
+class Dispute(models.Model):
+    OPEN = "OPEN"
+    RESOLVED = "RESOLVED"
+    STATUS_CHOICES = [
+        (OPEN, "Open"),
+        (RESOLVED, "Resolved"),
+    ]
+
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="dispute")
+    buyer_email = models.EmailField()
+    seller_email = models.EmailField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=OPEN)
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    def mark_resolved(self):
+        """
+        Mark the dispute as resolved.
+        """
+        self.status = self.RESOLVED
+        self.resolved_at = timezone.now()
+        self.save()

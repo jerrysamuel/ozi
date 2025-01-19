@@ -11,7 +11,7 @@
     <!-- Dashboard Layout -->
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <aside class="bg-primary text-white w-64 p-6">
+        <aside class="bg-green-700 text-white w-64 p-6">
             <h1 class="text-2xl font-bold mb-8">Sunshine Funitures Seller</h1>
             <nav>
                 <ul class="space-y-4">
@@ -28,10 +28,16 @@
         <div class="flex-1 flex flex-col">
             <!-- Header -->
             <header class="bg-secondary text-white p-6 flex justify-between items-center">
-                <h2 class="text-2xl font-semibold">Seller Dashboard</h2>
+                <h2 class="text-2xl text-black font-semibold">{{request.user.username}}'s Dashboard</h2>
                 <div class="flex items-center space-x-4">
-                    <button class="bg-accent px-4 py-2 rounded hover:bg-blue-500">Notifications</button>
-                    <img src="https://via.placeholder.com/40" alt="Profile" class="rounded-full border-2 border-white">
+                    <a href="{% url "add_product" %}"><button class="bg-accent-400 text-black px-2 py-1 rounded hover:bg-green-700">Add Product</button></a>
+                    {%if store %}
+                    <h1 class="text-2xl font-bold text-green-700">{{store.name}}</h1>
+                    {%else%}
+                    <a href="{% url "createstore"%}"><button class="bg-accent-400 text-black px-2 py-1 rounded hover:bg-green-700">Create Store</button></a>
+                    {%endif%}
+                    <img src="https://via.placeholder.com/40" alt="Profile" class="rounded-full text-black border-2 border-green">
+                    <a href="{% url "logout" %}" class="block py-1 px-2 text-black rounded hover:bg-green-600">Logout</a>
                 </div>
             </header>
 
@@ -41,53 +47,53 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Card 1 -->
                     <div class="bg-white shadow rounded p-6 flex items-center space-x-4">
-                        <div class="p-4 bg-blue-100 rounded-full">
-                            <svg class="w-8 h-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="p-2 bg-blue-100 rounded-full">
+                            <svg class="w-4 h-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3M15 7h6m-3-3v6m-7 5H3m18-5a2 2 0 100-4 2 2 0 000 4z" />
                             </svg>
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold text-primary">Total Sales</h3>
-                            <p class="text-2xl font-bold">$12,345</p>
+                            <p class="text-2xl font-bold">₦{{request.user.wallet.balance}}</p>
                         </div>
                     </div>
 
                     <!-- Card 2 -->
                     <div class="bg-white shadow rounded p-6 flex items-center space-x-4">
-                        <div class="p-4 bg-blue-100 rounded-full">
-                            <svg class="w-8 h-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="p-2 bg-blue-100 rounded-full">
+                            <svg class="w-4 h-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 21V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16m4-9l4 4m0 0l4-4m-4 4V3" />
                             </svg>
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold text-primary">Products Sold</h3>
-                            <p class="text-2xl font-bold">1,245</p>
+                            <p class="text-2xl font-bold">{{ completed_orders }}</p>
                         </div>
                     </div>
 
                     <!-- Card 3 -->
                     <div class="bg-white shadow rounded p-6 flex items-center space-x-4">
-                        <div class="p-4 bg-blue-100 rounded-full">
-                            <svg class="w-8 h-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="p-2 bg-blue-100 rounded-full">
+                            <svg class="w-4 h-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-semibold text-primary">Active Listings</h3>
-                            <p class="text-2xl font-bold">350</p>
+                            <h3 class="text-xl font-semibold text-primary">Available Products</h3>
+                            <p class="text-2xl font-bold">{{ product_count }}</p>
                         </div>
                     </div>
 
                     <!-- Card 4 -->
                     <div class="bg-white shadow rounded p-6 flex items-center space-x-4">
-                        <div class="p-4 bg-blue-100 rounded-full">
-                            <svg class="w-8 h-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="p-2 bg-blue-100 rounded-full">
+                            <svg class="w-4 h-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16l6-6 4 4 8-8" />
                             </svg>
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold text-primary">Pending Orders</h3>
-                            <p class="text-2xl font-bold">28</p>
+                            <p class="text-2xl font-bold">{{pending_orders}}</p>
                         </div>
                     </div>
                 </div>
@@ -97,7 +103,6 @@
                     <h3 class="text-lg font-semibold text-primary mb-4">Sales Overview</h3>
                     <div class="bg-white shadow rounded p-6">
                         <div class="h-64 bg-blue-100 rounded">
-                            <!-- Placeholder for a Chart -->
                             <p class="text-center text-gray-500 pt-24">[Sales Graph]</p>
                         </div>
                     </div>

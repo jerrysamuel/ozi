@@ -8,8 +8,8 @@
             <h1 class="text-2xl font-bold mb-6">Sunshine Funitures</h1>
             <nav>
                 <ul class="space-y-4">
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-green-600">Dashboard</a></li>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-green-600">My Orders</a></li>
+                    <li><a href="{% url "deposit_to_wallet" %}" class="block py-2 px-4 rounded hover:bg-green-600">Deposit</a></li>
+                    <li><a href="{% url "order_summary" %}" class="block py-2 px-4 rounded hover:bg-green-600">My Orders</a></li>
                     <li><a href="#" class="block py-2 px-4 rounded hover:bg-green-600">Wishlist</a></li>
                     <li><a href="#" class="block py-2 px-4 rounded hover:bg-green-600">Profile</a></li>
                     <li><a href="{% url "logout" %}" class="block py-2 px-4 rounded hover:bg-green-600">Logout</a></li>
@@ -22,14 +22,18 @@
             <!-- Header -->
             <header class="bg-blue-800 text-white p-4">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold">{{request.user.username}}'s Dashboard</h2>
+                    <h2 class="text-xl font-semibold capitalize">{{request.user.username}}'s Dashboard</h2>
+                    
                     <div class="space-x-3">
+                        
+                        <a href="{% url "view_cart"%}">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
                           </svg>
-                          <span class="text-xs text-red-900 absolute top-10 right-50">{{cart_count}}</span>
-                        <button class="bg-green-500 px-2 py-1 rounded hover:bg-green-400">Notifications</button>
-                        <a href="{% url "logout" %}"><button class="bg-green-500 px-2 py-1 rounded hover:bg-green-400">Logout</button></a>
+                          <span class="text-xs text-red-900 absolute top-10 right-38 font-bold">{{cart_count}}</span>
+                          </a>
+        
+                        <a href="{% url "index" %}"><button class="bg-green-500 px-2 py-1 rounded hover:bg-green-400">Shop Now</button></a>
                         
                     </div>
                 </div>
@@ -41,7 +45,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="bg-white p-6 shadow rounded">
                         <h3 class="text-lg font-semibold text-green-700">Wallet Balance</h3>
-                        <p class="text-2xl font-bold mt-2 text-green-900">{{wallet.balance}}</p>
+                        <p class="text-2xl font-bold mt-2 text-green-900">NGN{{wallet.balance}}</p>
                     </div>
                     <!-- Card 1 -->
                     <div class="bg-white p-6 shadow rounded">
@@ -61,41 +65,6 @@
                 </div>
 
                 <!-- Orders Table -->
-                <div class="mt-8">
-                    <h3 class="text-lg font-semibold text-green-700 mb-4">Recent Orders</h3>
-                    <div class="bg-white shadow rounded overflow-x-auto">
-                        <table class="min-w-full text-left">
-                            <thead class="bg-green-100">
-                                <tr>
-                                    <th class="py-2 px-4">Order ID</th>
-                                    <th class="py-2 px-4">Date</th>
-                                    <th class="py-2 px-4">Total</th>
-                                    <th class="py-2 px-4">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="py-2 px-4">#12345</td>
-                                    <td class="py-2 px-4">2024-12-15</td>
-                                    <td class="py-2 px-4">$120.00</td>
-                                    <td class="py-2 px-4 text-green-600">Delivered</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4">#12346</td>
-                                    <td class="py-2 px-4">2024-12-14</td>
-                                    <td class="py-2 px-4">$75.00</td>
-                                    <td class="py-2 px-4 text-yellow-600">Processing</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4">#12347</td>
-                                    <td class="py-2 px-4">2024-12-12</td>
-                                    <td class="py-2 px-4">$50.00</td>
-                                    <td class="py-2 px-4 text-red-600">Cancelled</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </main>
         </div>
     </div>
