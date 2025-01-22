@@ -10,8 +10,8 @@
                 <ul class="space-y-4">
                     <li><a href="{% url "deposit_to_wallet" %}" class="block py-2 px-4 rounded hover:bg-green-600">Deposit</a></li>
                     <li><a href="{% url "order_summary" %}" class="block py-2 px-4 rounded hover:bg-green-600">My Orders</a></li>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-green-600">Wishlist</a></li>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-green-600">Profile</a></li>
+                    <li><a href="{% url "wishlist" %}" class="block py-2 px-4 rounded hover:bg-green-600">Wishlist</a></li>
+                    <li><a href="{% url "profile"%}" class="block py-2 px-4 rounded hover:bg-green-600">Profile</a></li>
                     <li><a href="{% url "logout" %}" class="block py-2 px-4 rounded hover:bg-green-600">Logout</a></li>
                 </ul>
             </nav>

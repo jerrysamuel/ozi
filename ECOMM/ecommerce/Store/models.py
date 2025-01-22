@@ -1,5 +1,6 @@
 from datetime import timedelta, timezone
 from decimal import Decimal
+from django.conf import settings
 from django.db import models
 from User.models import Account, Adminwallet
 
@@ -37,7 +38,15 @@ class Product(models.Model):
     
 
 class Wishlist(models.Model):
-    name = models.OneToOneField(Product, on_delete=models.CASCADE, max_length=30)
+    name = models.ForeignKey(Product, on_delete=models.CASCADE, max_length=30)
+
+class MyWishlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mywishlist')
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='wishlisted_by')
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'product')  # Ensure a user can't add the same product multiple times
 
 RATING_CHOICES =(
 ("ONE", "1"),
@@ -214,7 +223,30 @@ class Order(models.Model):
     
 
 class Reviews(models.Model):
-    order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    rating = models.CharField(choices=RATING_CHOICES, default="1", max_length=6)
+    description= models.CharField(max_length=200)
+
+RATING_CHOICES =(
+("ONE", "1"),
+("TWO", "2"),
+("THREE", "3"),
+("FOUR", "4"),
+("FIVE", "5"),
+
+)
+
+class MyReviews(models.Model):
+    RATING_CHOICES =(
+("ONE", "1"),
+("TWO", "2"),
+("THREE", "3"),
+("FOUR", "4"),
+("FIVE", "5"),
+
+)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     rating = models.CharField(choices=RATING_CHOICES, default="1", max_length=6)
     description= models.CharField(max_length=200)
 

@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.db.models import Sum
 from django.db import transaction
 from .models import *
-
+from .forms import ReviewForm
 
 def product_detail(request, product_id):
     product = Product.objects.get(id=product_id)
@@ -185,3 +185,67 @@ def order_summary(request):
 
     return render(request, "Store/order_summary.html", {"orders": orders})
 
+@login_required
+def add_review(request, order_id):
+    """
+    View to allow users to add a review for a specific order.
+    """
+    order = get_object_or_404(Order, id=order_id, buyer=request.user)  # Ensure the user owns the order
+
+    # Check if a review already exists for this order
+    existing_review = MyReviews.objects.filter(order=order, user=request.user).first()
+    if existing_review:
+        messages.warning(request, "You have already submitted a review for this order.")
+        return redirect('order_summary')  # Redirect to order summary or appropriate page
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            # Save the review
+            review = form.save(commit=False)
+            review.user = request.user
+            review.order = order
+            review.save()
+            messages.success(request, "Thank you for your review!")
+            return redirect('order_summary')
+    else:
+        form = ReviewForm()
+
+    return render(request, "Store/add_review.html", {"form": form, "order": order})
+
+@login_required
+def add_to_wishlist(request, product_id):
+    if request.method == "POST":
+        # Ensure the user is authenticated
+        if not request.user.is_authenticated:
+            messages.error(request, "You need to log in to add items to your wishlist.")
+            return redirect('login')
+
+        # Get the product
+        product = get_object_or_404(Product, id=product_id)
+
+        # Check if the product is already in the user's wishlist
+        wishlist_item, created = MyWishlist.objects.get_or_create(user=request.user, product=product)
+
+        if created:
+            messages.success(request, f"{product.name} has been added to your wishlist!")
+        else:
+            messages.info(request, f"{product.name} is already in your wishlist.")
+
+        return redirect('product_detail', product_id=product_id)
+
+    # Redirect back if the method is not POST
+    return redirect('product_list')
+
+@login_required
+def wishlist_view(request):
+    # Fetch all wishlist items for the logged-in user
+    wishlist_items = MyWishlist.objects.filter(user=request.user).select_related('product')
+    return render(request, 'Store/wishlist.html', {'wishlist_items': wishlist_items})
+
+@login_required
+def remove_from_wishlist(request, product_id):
+    if request.method == "POST":
+        MyWishlist.objects.filter(user=request.user, product_id=product_id).delete()
+        messages.success(request, "Item removed from your wishlist.")
+    return redirect('wishlist')

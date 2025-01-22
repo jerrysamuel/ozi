@@ -31,3 +31,21 @@ class SigninForm(AuthenticationForm):
             'placeholder': '••••••••'
         }),
     )
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['fullname', 'age', 'address', 'phone', 'state', 'bio', 'image']
+        widgets = {
+            'fullname': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Full Name'}),
+            'age': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Age'}),
+            'address': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Address'}),
+            'phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Phone Number'}),
+            'state': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'State'}),
+            'bio': forms.Textarea(attrs={'class': 'form-input', 'placeholder': 'Short Bio'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-input'}),
+        }
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if not image:  # If no image is provided
+            return None
+        return image

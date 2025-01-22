@@ -1,0 +1,68 @@
+{% extends "User/base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6 bg-white border border-gray-200 shadow-md rounded-lg">
+    <a href="{% url 'index' %}" class="inline-flex mb-4 items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Back</a>
+    <h1 class="text-3xl font-semibold text-gray-900 mb-6">Your Profile</h1>
+
+    <!-- Display current profile information -->
+    {% if profile %}
+    <div class="mb-6">
+        <img src="{{ profile.image.url }}" alt="Profile Image" class="w-32 h-32 object-cover rounded-full mx-auto mb-4" />
+        <div class="text-center">
+            <p class="text-xl font-semibold">{{ profile.fullname }}</p>
+            <p class="text-sm text-gray-500">{{ profile.bio }}</p>
+            <p class="mt-2"><strong>Age:</strong> {{ profile.age }}</p>
+            <p><strong>Phone:</strong> {{ profile.phone }}</p>
+            <p><strong>Address:</strong> {{ profile.address }}</p>
+            <p><strong>State:</strong> {{ profile.state }}</p>
+        </div>
+    </div>
+    {% else %}
+    <p>No profile information available.</p>
+    {% endif %}
+
+    <!-- Form to update profile -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+                <label for="id_fullname" class="block text-sm font-medium text-gray-700">Full Name</label>
+                {{ form.fullname }}
+            </div>
+            <div>
+                <label for="id_age" class="block text-sm font-medium text-gray-700">Age</label>
+                {{ form.age }}
+            </div>
+            <div>
+                <label for="id_address" class="block text-sm font-medium text-gray-700">Address</label>
+                {{ form.address }}
+            </div>
+            <div>
+                <label for="id_phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                {{ form.phone }}
+            </div>
+            <div>
+                <label for="id_state" class="block text-sm font-medium text-gray-700">State</label>
+                {{ form.state }}
+            </div>
+            <div>
+                <label for="id_bio" class="block text-sm font-medium text-gray-700">Bio</label>
+                {{ form.bio }}
+            </div>
+            <div>
+                <label for="id_image" class="block text-sm font-medium text-gray-700">Profile Image</label>
+                {{ form.image }}
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .decorators import buyer_required, seller_required
 import re
 from django.contrib.auth.views import LoginView
-from .forms import SignupForm, SigninForm
+from .forms import SignupForm, SigninForm, ProfileForm
 from django.urls import reverse, reverse_lazy
 from .models import Account, Profile, Wallet,Adminwallet
 from django.views.generic import CreateView
@@ -42,6 +42,28 @@ class SignInView(LoginView):
                 return reverse_lazy("sellerdashboard")  # Define waiter_dashboard URL
         # Default redirect to dashboard
         return reverse_lazy("index")
+@login_required
+def profile(request):
+    """
+    View to display and update the user's profile information.
+    """
+    user = request.user
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = None
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()  # Save the updated profile
+            messages.success(request, "Your profile has been updated successfully!")
+            return redirect('profile')  # Redirect to profile page after saving
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'User/profile.html', {'form': form, 'profile': profile})
+
     
 def signout_view(request):
     logout(request)
@@ -57,12 +79,14 @@ def sellerdashboard(request):
         pending_orders = Order.count_pending_orders_for_seller(seller)
         store = Mystore.objects.get(owner=request.user)  
         product_count = store.product_count() 
+        recent_orders = Order.objects.filter(seller=seller).order_by('-created_at')
     except Mystore.DoesNotExist:
         store = None
         product_count = Decimal(0)
         completed_orders = Decimal(0)
         pending_orders = Decimal(0)
-    return render(request, 'User/sellerdashboard.html', {"store": store, "product_count": product_count, "completed_orders": completed_orders, "pending_orders": pending_orders})
+        recent_orders = []
+    return render(request, 'User/sellerdashboard.html', {"store": store, "product_count": product_count, "completed_orders": completed_orders, "pending_orders": pending_orders, "recent_orders": recent_orders})
 
 @login_required
 @buyer_required
@@ -72,7 +96,7 @@ def buyerdashboard(request):
 
         allorders= Order.objects.all()
         total_orders = Decimal(allorders.count())
-        allwishlist = Wishlist.objects.all()
+        allwishlist = MyWishlist.objects.all()
         mywishlist = Decimal(allwishlist.count())
         allreviews = Reviews.objects.all()
         reviews = Decimal(allreviews.count())

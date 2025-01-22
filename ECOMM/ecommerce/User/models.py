@@ -75,7 +75,7 @@ class Profile(models.Model):
     phone = models.CharField(max_length=15, default='080')
     state = models.CharField(max_length=40)
     bio = models.CharField(max_length=100, blank=True, null=True)
-    image = models.ImageField(upload_to='profiles', blank=True, null=True)
+    image = models.ImageField(upload_to='profiles', blank=True, null=True, default='profiles/default.jpeg')
 
     def __str__(self):
         return self.user.username

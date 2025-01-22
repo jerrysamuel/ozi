@@ -13,4 +13,5 @@ urlpatterns = [
     path('',views.index, name='index' ),
     path('user/adminwallet/', views.adminwallet, name='adminwallet'),
     path('search/', views.searchresult, name='search'),
+    path('user/profile/', views.profile, name='profile'),
 ]
