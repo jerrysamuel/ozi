@@ -12,4 +12,5 @@ urlpatterns = [
     path("verify-deposit/", views.verify_deposit, name="verify_deposit"),
     path('',views.index, name='index' ),
     path('user/adminwallet/', views.adminwallet, name='adminwallet'),
+    path('search/', views.searchresult, name='search'),
 ]

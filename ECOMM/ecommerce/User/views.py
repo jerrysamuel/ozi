@@ -16,6 +16,7 @@ from django.views.generic import CreateView
 from Store.models import *
 from decimal import Decimal
 from django.db.models import Sum
+from django.db.models import Q
 
 
 class SignUpView(CreateView):
@@ -91,9 +92,28 @@ def index(request):
     cart_count = Cart.objects.filter(user=request.user).aggregate(Sum('quantity'))['quantity__sum']
     products = Product.objects.all()
     store = Mystore.objects.filter(owner=request.user)
+
+    search_term = request.GET.get('search', '')  # Default to an empty string if no search term is provided
+
+    # If there's a search term, filter the products
+    if search_term:
+        products = products.filter(Q(name__icontains=search_term) | Q(description__icontains=search_term))
+        # This filters products where either the name or description contains the search term (case insensitive)
     
 
-    return render(request, "User/index.html", {"cart_count": cart_count, 'products': products, 'store': store})    
+    return render(request, "User/index.html", {"cart_count": cart_count, 'products': products, 'store': store, 'search_term':search_term})  
+def searchresult(request):
+      products = Product.objects.all()
+   
+
+      search_term = request.GET.get('search', '')  # Default to an empty string if no search term is provided
+
+        # If there's a search term, filter the products
+      if search_term:
+            products = products.filter(Q(name__icontains=search_term) | Q(description__icontains=search_term))
+            # This filters products where either the name or description contains the search term (case insensitive)
+
+      return render(request, "User/searchresult.html", {'search_term':search_term, 'products':products})
 
 @login_required
 def deposit_to_wallet(request):

@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timedelta, timezone
 from decimal import Decimal
 from django.db import models
 from User.models import Account, Adminwallet
@@ -154,6 +154,9 @@ class Order(models.Model):
         """
         Cancels the order and refunds the buyer.
         """
+        if timezone.now() - self.created_at > timedelta(hours=12):
+            raise ValueError("Order cannot be cancelled after 12 hours.")
+        
         if self.status == self.PENDING:
             self.status = self.CANCELLED
             self.save()
