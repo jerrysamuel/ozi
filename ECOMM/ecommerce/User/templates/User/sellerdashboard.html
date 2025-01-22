@@ -88,37 +88,32 @@
                         </div>
                     </div>
                 </div>
-                {% if pending_orders > 0 %}
-<div id="alert-box" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 overflow-hidden">
-    <p id="alert-message" class="font-bold whitespace-nowrap">
-        Alert! You have {{ pending_orders }} pending order(s). Please process them as soon as possible!
-    </p>
-</div>
-<script>
-    // JavaScript for creating a flowing message
-    document.addEventListener("DOMContentLoaded", function () {
-        const alertMessage = document.getElementById("alert-message");
-        const alertBox = document.getElementById("alert-box");
+                        {% if pending_orders > 0 %}
+        <div id="alert-box" class="bg-yellow-100 mt-4 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 overflow-hidden relative h-12 w-full">
+            <p id="alert-message" class="absolute whitespace-nowrap font-bold text-yellow-800 animate-scroll">
+                Alert! You have {{ pending_orders }} pending order(s). Please process them as soon as possible!
+            </p>
+        </div>
 
-        // Clone the message to create a seamless loop
-        const clonedMessage = alertMessage.cloneNode(true);
-        alertBox.appendChild(clonedMessage);
-
-        // Set up scrolling animation
-        let offset = 0;
-        function scrollMessage() {
-            offset -= 2; // Adjust speed here
-            if (Math.abs(offset) >= alertMessage.offsetWidth) {
-                offset = 0;
+        <!-- Inline Tailwind custom animation -->
+        <style>
+            @keyframes scroll {
+                0% {
+                    transform: translateX(100%);
+                }
+                100% {
+                    transform: translateX(-100%);
+                }
             }
-            alertBox.scrollLeft = Math.abs(offset); // Scroll horizontally
-            requestAnimationFrame(scrollMessage);
-        }
 
-        scrollMessage(); // Start the animation
-    });
-</script>
-{% endif %}
+            .animate-scroll {
+                animation: scroll 10s linear infinite;
+            }
+        </style>
+        {% else %}
+        <p class="mt-4 p-4 text-sm text-green-100">No pending orders.</p>
+        {% endif %}
+
                 <!-- Analytics Section -->
                 <div class="mt-8">
                     <h3 class="text-lg font-semibold text-primary mb-4">Sales Overview</h3>

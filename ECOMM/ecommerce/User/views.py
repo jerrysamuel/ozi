@@ -92,6 +92,8 @@ def sellerdashboard(request):
 @buyer_required
 def buyerdashboard(request):
     cart_count = Cart.objects.filter(user=request.user).aggregate(Sum('quantity'))['quantity__sum'] or 0
+    order_count = Order.objects.filter(buyer=request.user).count() or Decimal(0)
+    wishlist_count = MyWishlist.objects.filter(user=request.user).count() or Decimal(0)
     try:
 
         allorders= Order.objects.all()
@@ -110,7 +112,7 @@ def buyerdashboard(request):
        
 
      
-    return render(request, 'User/buyerdashboard.html', {"total_orders":total_orders, "mywishlist":mywishlist, "reviews":reviews, "cart_count": cart_count, 'wallet': wallet})
+    return render(request, 'User/buyerdashboard.html', { "reviews":reviews, "cart_count": cart_count, 'wallet': wallet, 'order_count': order_count, 'wishlist_count': wishlist_count, 'total_orders': total_orders, 'mywishlist': mywishlist})
 @login_required
 def index(request):
     cart_count = Cart.objects.filter(user=request.user).aggregate(Sum('quantity'))['quantity__sum']
