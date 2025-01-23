@@ -27,7 +27,7 @@ class Mystore(models.Model):
 
 
 class Product(models.Model):
-    store = models.ForeignKey(Mystore, on_delete=models.CASCADE)
+    store = models.ForeignKey(Mystore, on_delete=models.CASCADE, related_name="products")
     name = models.CharField(max_length=50)
     price = models.PositiveIntegerField(default=1)
     description = models.CharField(max_length=100)

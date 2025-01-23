@@ -57,15 +57,19 @@ def view_cart(request):
 @login_required
 def add_to_cart(request, product_id):
     """Add a product to the cart or update quantity if it already exists."""
-    product = get_object_or_404(Product, id=product_id)
-    cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-        messages.info(request, f"Updated quantity of {product.name} in your cart.")
+    if request.user.role == "seller":
+        messages.error(request, f"a seller cannot add items to cart.")
+        return redirect("sellerdashboard")
     else:
-        messages.success(request, f"Added {product.name} to your cart.")
-    return redirect("view_cart")
+        product = get_object_or_404(Product, id=product_id)
+        cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+            messages.info(request, f"Updated quantity of {product.name} in your cart.")
+        else:
+            messages.success(request, f"Added {product.name} to your cart.")
+        return redirect("view_cart")
 
 
 @login_required

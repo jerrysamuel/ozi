@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-</head>
-<body class="bg-green-50 min-h-screen font-sans">
+{%extends "User/base.html"%}
+{% block content %}
+<body class="bg-green-50 min-h-screen">
     <!-- Dashboard Layout -->
     <div class="flex h-screen">
         <!-- Sidebar -->
@@ -15,9 +8,9 @@
             <h1 class="text-2xl font-bold mb-8">Sunshine Funitures Seller</h1>
             <nav>
                 <ul class="space-y-4">
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-secondary">Dashboard</a></li>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-secondary">Products</a></li>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-secondary">Orders</a></li>
+                    <li><a href="{% url "sellerdashboard" %}" class="block py-2 px-4 rounded hover:bg-secondary">Dashboard</a></li>
+                    <li><a href="{% url "seller_products" %}" class="block py-2 px-4 rounded hover:bg-secondary">Products</a></li>
+                    <li><a href="{% url "store_orders" %}" class="block py-2 px-4 rounded hover:bg-secondary">Orders</a></li>
                     <li><a href="{% url "profile"%}" class="block py-2 px-4 rounded hover:bg-secondary">Profile</a></li>
                 </ul>
             </nav>
@@ -26,7 +19,7 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
             <!-- Header -->
-            <header class="bg-secondary text-white p-6 flex justify-between items-center">
+            <header class="bg-green text-white p-6 flex justify-between items-center">
                 <h2 class="text-2xl text-black font-semibold">{{request.user.username}}'s Dashboard</h2>
                 <div class="flex items-center space-x-4">
                     <a href="{% url "add_product" %}"><button class="bg-accent-400 text-black px-2 py-1 rounded hover:bg-green-700">Add Product</button></a>
@@ -35,8 +28,7 @@
                     {%else%}
                     <a href="{% url "createstore"%}"><button class="bg-accent-400 text-black px-2 py-1 rounded hover:bg-green-700">Create Store</button></a>
                     {%endif%}
-                    <img src="https://via.placeholder.com/40" alt="Profile" class="rounded-full text-black border-2 border-green">
-                    <a href="{% url "logout" %}" class="block py-1 px-2 text-black rounded hover:bg-green-600">Logout</a>
+                    <a href="{% url "logout" %}" class="block py-1 px-2 text-black rounded hover:bg-green-700">Logout</a>
                 </div>
             </header>
 
@@ -96,7 +88,37 @@
                         </div>
                     </div>
                 </div>
+                {% if pending_orders > 0 %}
+<div id="alert-box" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 overflow-hidden">
+    <p id="alert-message" class="font-bold whitespace-nowrap">
+        Alert! You have {{ pending_orders }} pending order(s). Please process them as soon as possible!
+    </p>
+</div>
+<script>
+    // JavaScript for creating a flowing message
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertMessage = document.getElementById("alert-message");
+        const alertBox = document.getElementById("alert-box");
 
+        // Clone the message to create a seamless loop
+        const clonedMessage = alertMessage.cloneNode(true);
+        alertBox.appendChild(clonedMessage);
+
+        // Set up scrolling animation
+        let offset = 0;
+        function scrollMessage() {
+            offset -= 2; // Adjust speed here
+            if (Math.abs(offset) >= alertMessage.offsetWidth) {
+                offset = 0;
+            }
+            alertBox.scrollLeft = Math.abs(offset); // Scroll horizontally
+            requestAnimationFrame(scrollMessage);
+        }
+
+        scrollMessage(); // Start the animation
+    });
+</script>
+{% endif %}
                 <!-- Analytics Section -->
                 <div class="mt-8">
                     <h3 class="text-lg font-semibold text-primary mb-4">Sales Overview</h3>
@@ -154,4 +176,4 @@
         </div>
     </div>
 </body>
-</html>
+{% endblock %}

@@ -14,4 +14,7 @@ urlpatterns = [
     path('user/adminwallet/', views.adminwallet, name='adminwallet'),
     path('search/', views.searchresult, name='search'),
     path('user/profile/', views.profile, name='profile'),
+    path("products/", views.seller_products, name="seller_products"),
+    path("store_orders/", views.store_orders, name="store_orders"),
+    
 ]

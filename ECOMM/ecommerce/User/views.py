@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.conf import settings
 import requests
 from django.http import HttpResponse
@@ -205,3 +205,28 @@ def adminwallet(request):
     adminwallets = Adminwallet.objects.get(id=1)
     balance = adminwallets.balance
     return render(request, "User/adminwallet.html", {"balance": balance})
+
+@login_required
+def seller_products(request):
+    try:
+        # Fetch the store associated with the logged-in user
+        store = Mystore.objects.get(owner=request.user)
+        # Retrieve all products for the store
+        products = store.products.all()
+    except Mystore.DoesNotExist:
+        # If no store exists, return an empty product list
+        products = []
+
+    return render(request, "User/products.html", {"products": products})
+@login_required
+def store_orders(request):
+    try:
+        # Get the store owned by the logged-in user
+        store = Mystore.objects.get(owner=request.user)
+        # Get all orders linked to products from this store
+        orders = Order.objects.filter(seller=request.user).order_by('-created_at')
+    except Mystore.DoesNotExist:
+        store = None
+        orders = []
+
+    return render(request, "User/store_orders.html", {"store": store, "orders": orders, })    

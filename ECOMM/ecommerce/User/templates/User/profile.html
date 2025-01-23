@@ -8,7 +8,12 @@
     <!-- Display current profile information -->
     {% if profile %}
     <div class="mb-6">
-        <img src="{{ profile.image.url }}" alt="Profile Image" class="w-32 h-32 object-cover rounded-full mx-auto mb-4" />
+        {% if profile.image %}
+        
+        <img src="{{ profile.image.url | default:'#' }}" alt="Profile Image" class="w-32 h-32 object-cover rounded-full mx-auto mb-4" />
+        {% else %}
+            <p>No image available.</p>
+        {% endif %}
         <div class="text-center">
             <p class="text-xl font-semibold">{{ profile.fullname }}</p>
             <p class="text-sm text-gray-500">{{ profile.bio }}</p>
@@ -59,7 +64,7 @@
         </div>
 
         <div class="flex justify-end">
-            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
                 Save Changes
             </button>
         </div>
