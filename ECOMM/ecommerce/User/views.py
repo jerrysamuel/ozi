@@ -94,13 +94,14 @@ def buyerdashboard(request):
     cart_count = Cart.objects.filter(user=request.user).aggregate(Sum('quantity'))['quantity__sum'] or 0
     order_count = Order.objects.filter(buyer=request.user).count() or Decimal(0)
     wishlist_count = MyWishlist.objects.filter(user=request.user).count() or Decimal(0)
+    
     try:
 
         allorders= Order.objects.all()
         total_orders = Decimal(allorders.count())
         allwishlist = MyWishlist.objects.all()
         mywishlist = Decimal(allwishlist.count())
-        allreviews = Reviews.objects.all()
+        allreviews = MyReview.objects.filter(user=request.user)
         reviews = Decimal(allreviews.count())
         wallet = request.user.wallet
 
@@ -114,20 +115,29 @@ def buyerdashboard(request):
      
     return render(request, 'User/buyerdashboard.html', { "reviews":reviews, "cart_count": cart_count, 'wallet': wallet, 'order_count': order_count, 'wishlist_count': wishlist_count, 'total_orders': total_orders, 'mywishlist': mywishlist})
 @login_required
+
 def index(request):
     cart_count = Cart.objects.filter(user=request.user).aggregate(Sum('quantity'))['quantity__sum']
-    products = Product.objects.all()
     store = Mystore.objects.filter(owner=request.user)
 
-    search_term = request.GET.get('search', '')  # Default to an empty string if no search term is provided
+    # Annotate products with their average rating
+    products = Product.objects.annotate(avg_rating=Avg('reviews__rating'))
 
-    # If there's a search term, filter the products
+    # Handle search functionality
+    search_term = request.GET.get('search', '')
     if search_term:
         products = products.filter(Q(name__icontains=search_term) | Q(description__icontains=search_term))
-        # This filters products where either the name or description contains the search term (case insensitive)
-    
 
-    return render(request, "User/index.html", {"cart_count": cart_count, 'products': products, 'store': store, 'search_term':search_term})  
+    return render(
+        request,
+        "User/index.html",
+        {
+            "cart_count": cart_count,
+            "products": products,
+            "store": store,
+            "search_term": search_term,
+        },
+    )
 def searchresult(request):
       products = Product.objects.all()
    

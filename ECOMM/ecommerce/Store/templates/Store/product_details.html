@@ -1,29 +1,84 @@
 {% extends "Store/base.html" %}
-
+{% load custom_filters %}
 {% block content %}
-<div class="container mx-auto p-6">
-    <a href="{% url 'index' %}" class="inline-flex mb-4 items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Back</a>
-    <h1 class="text-4xl font-bold mb-5">Product Details</h1>
-    {% if product %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12">
-            <!-- Product Image -->
-            <div>
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full rounded-lg shadow-lg">
-            </div>
-            <!-- Product Details -->
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800">{{ product.name }}</h2>
-                <p class="text-lg text-gray-500">₦{{ product.price }}</p>
-                <p class="text-lg text-gray-500">{{ product.description }}</p>
-                <form action="{% url 'add_to_cart' product.id %}" method="POST">
-                    {% csrf_token %}
-                    <button class="bg-green-500 text-white px-4 py-2 rounded-lg mt-4">Add to Cart</button>
-                </form>
-            </div>
+<div class="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <!-- Product Image and Details -->
+    <div class="flex flex-col md:flex-row items-center md:items-start">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full md:w-1/3 rounded-lg shadow-md mb-4 md:mb-0">
+        <div class="ml-0 md:ml-8">
+            <h1 class="text-2xl font-bold text-gray-800">{{ product.name }}</h1>
+            <p class="text-gray-600 mt-2 break-words whitespace-normal">{{ product.description }}</p>
+
+            <p class="text-xl text-green-600 mt-4 font-semibold">₦{{ product.price }}</p>
         </div>
-    {% else %}
-        <p class="text-center text-red-500">Product not found.</p>
-    {% endif %}
+        
+        {% if avg_rating %}
     
+        <div class="flex mt-3">
+            {% for i in "12345" %}
+            {% if i <= avg_rating|floatformat:0 %}
+                    <!-- Filled star -->
+                    <svg class="w-4 h-4 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.568L24 9.432l-6 6.117 1.417 8.451L12 18.899l-7.417 4.101L6 15.549 0 9.432l8.332-1.277L12 .587z" />
+                    </svg>
+                {% else %}
+                    <!-- Empty star -->
+                    <svg class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.568L24 9.432l-6 6.117 1.417 8.451L12 18.899l-7.417 4.101L6 15.549 0 9.432l8.332-1.277L12 .587z" />
+                    </svg>
+                {% endif %}
+            {% endfor %}
+        </div>
+{% endif %}
+
+                </div>
+            </h1>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="mt-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Reviews</h2>
+        <div class="space-y-4">
+            {% for review in reviews %}
+                <div class="p-4 bg-gray-100 rounded-lg">
+                    <p class="text-sm text-gray-700">
+                        <span class="font-bold">{{ review.user.username }}</span>: {{ review.description }}
+                    </p>
+                    <div class="mt-1">
+                        <h1>Rating: 
+                            <div class="flex">
+                                {% for i in "12345"|make_list %}
+                                    {% if i <= review.rating %}
+                                        <svg class="w-4 h-4 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 .587l3.668 7.568L24 9.432l-6 6.117 1.417 8.451L12 18.899l-7.417 4.101L6 15.549 0 9.432l8.332-1.277L12 .587z" />
+                                        </svg>
+                                    {% else %}
+                                        <svg class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 .587l3.668 7.568L24 9.432l-6 6.117 1.417 8.451L12 18.899l-7.417 4.101L6 15.549 0 9.432l8.332-1.277L12 .587z" />
+                                        </svg>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </h1>
+                    </div>
+                    
+                </div>
+            {% empty %}
+                <p class="text-gray-500">No reviews yet. Be the first to review this product!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Add Review Section -->
+    <div class="mt-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Add Your Review</h2>
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600">Submit</button>
+        </form>
+    </div>
 </div>
+
+
 {% endblock %}

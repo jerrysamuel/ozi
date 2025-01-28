@@ -35,7 +35,7 @@
                                 </form>
                             {% elif order.status == order.COMPLETED %}
                                 <button class="bg-gray-500 text-white px-2 py-1 rounded cursor-not-allowed" disabled>Completed</button>
-                                <a href="{% url 'add_review' order.id %}"><button name="action" value="accept_delivery" class="bg-green-500 text-white px-2 py-1 rounded">Add Review</button></a>
+                                <a href="{% url 'index' %}"><button name="action" value="accept_delivery" class="bg-green-500 text-white px-2 py-1 rounded">Add Review</button></a>
                             {% elif order.status == order.CANCELLED %}
                                 <button class="bg-gray-500 text-white px-2 py-1 rounded cursor-not-allowed" disabled>Cancelled</button>
                             {% endif %}

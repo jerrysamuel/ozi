@@ -1,8 +1,10 @@
-from datetime import timedelta, timezone
+from datetime import timedelta
+from django.utils import timezone
 from decimal import Decimal
 from django.conf import settings
 from django.db import models
 from User.models import Account, Adminwallet
+from django.db.models import Avg
 
 from django.contrib.auth import get_user_model
 
@@ -35,6 +37,8 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    def average_rating(self):
+        return MyReview.objects.filter(product=self).aggregate(Avg('rating'))['rating__avg'] or 0
     
 
 class Wishlist(models.Model):
@@ -47,16 +51,6 @@ class MyWishlist(models.Model):
 
     class Meta:
         unique_together = ('user', 'product')  # Ensure a user can't add the same product multiple times
-
-RATING_CHOICES =(
-("ONE", "1"),
-("TWO", "2"),
-("THREE", "3"),
-("FOUR", "4"),
-("FIVE", "5"),
-
-)
-
 
 
 
@@ -183,13 +177,12 @@ class Order(models.Model):
         """
         if self.status != self.PENDING:
             raise ValueError("Only pending orders can be rejected.")
-        # Create a dispute
         Dispute.objects.create(
-            order=self,
-            buyer_email=self.buyer.email,
-            seller_email=self.seller.email,
-            status=Dispute.OPEN,
-        )
+        order=self,
+        buyer_email=self.buyer.email,
+        seller_email=self.seller.email,
+        status=Dispute.OPEN,
+    )
         # Keep funds in escrow
         self.save()
     
@@ -222,34 +215,30 @@ class Order(models.Model):
         return f"Order {self.id}: {self.buyer.username} -> {self.seller.username}, Status: {self.status}"
     
 
-class Reviews(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    rating = models.CharField(choices=RATING_CHOICES, default="1", max_length=6)
-    description= models.CharField(max_length=200)
-
-RATING_CHOICES =(
-("ONE", "1"),
-("TWO", "2"),
-("THREE", "3"),
-("FOUR", "4"),
-("FIVE", "5"),
-
-)
-
-class MyReviews(models.Model):
+class MyReview(models.Model):
     RATING_CHOICES =(
-("ONE", "1"),
-("TWO", "2"),
-("THREE", "3"),
-("FOUR", "4"),
-("FIVE", "5"),
+("1", "1"),
+("2", "2"),
+("3", "3"),
+("4", "4"),
+("5", "5"),
 
 )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    rating = models.CharField(choices=RATING_CHOICES, default="1", max_length=6)
-    description= models.CharField(max_length=200)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")  # Product being reviewed
+    rating = models.CharField(max_length=1, choices=RATING_CHOICES, default='1')
+    description = models.CharField(max_length=200)
 
+    def __str__(self):
+        return f"Review for {self.product.name} by {self.user.username}"
+    
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.product.name} (x{self.quantity})"
 class Dispute(models.Model):
     OPEN = "OPEN"
     RESOLVED = "RESOLVED"

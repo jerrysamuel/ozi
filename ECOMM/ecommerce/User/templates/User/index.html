@@ -74,6 +74,27 @@
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">{{ product.name }}</h5>
             </a>
             <p class="text-gray-500">₦{{ product.price|floatformat:2 }}</p>
+            <div class="flex items-center mt-2">
+            {% if product.avg_rating %}
+            <div class="flex mt-3 ml-24 mb-2">
+                {% for i in "12345" %}
+                    {% if i <= product.avg_rating|floatformat:0 %}
+                        <!-- Filled star -->
+                        <svg class="w-4 h-4 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 .587l3.668 7.568L24 9.432l-6 6.117 1.417 8.451L12 18.899l-7.417 4.101L6 15.549 0 9.432l8.332-1.277L12 .587z" />
+                        </svg>
+                    {% else %}
+                        <!-- Empty star -->
+                        <svg class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 .587l3.668 7.568L24 9.432l-6 6.117 1.417 8.451L12 18.899l-7.417 4.101L6 15.549 0 9.432l8.332-1.277L12 .587z" />
+                        </svg>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-400 ml-24 mb-2">No ratings yet</p>
+        {% endif %}
+            </div>
             <form action="{% url 'add_to_cart' product.id %}" method="POST">
                 {% csrf_token %}
                 <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">

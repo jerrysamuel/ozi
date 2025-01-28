@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.forms import modelform_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -6,10 +7,45 @@ from django.db.models import Sum
 from django.db import transaction
 from .models import *
 from .forms import ReviewForm
+from User.decorators import buyer_required, seller_required
+
 
 def product_detail(request, product_id):
-    product = Product.objects.get(id=product_id)
-    context = {'product': product}
+    # Fetch the product or return a 404 error
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Get all reviews for the product
+    reviews = MyReview.objects.filter(product=product)
+    avg_rating = MyReview.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+    
+    # If no reviews, set avg_rating to 0
+    if avg_rating is None:
+        avg_rating = 0
+    
+    # Initialize the review form
+    form = ReviewForm(request.POST or None)
+    
+    if request.method == 'POST':
+        # Process the form submission
+        if form.is_valid():
+            # Create or update the review
+            MyReview.objects.update_or_create(
+                user=request.user,
+                product=product,
+                defaults={
+                    'rating': form.cleaned_data['rating'],
+                    'description': form.cleaned_data['description'],
+                },
+            )
+            return redirect('product_detail', product_id=product_id)
+
+    # Pass the product, reviews, and form to the template
+    context = {
+        'avg_rating': avg_rating,
+        'product': product,
+        'reviews': reviews,
+        'form': form
+    }
     return render(request, 'Store/product_details.html', context)
 
 @login_required
@@ -46,6 +82,7 @@ def add_product(request):
 
     return render(request, "Store/add_product.html", {"store": store})
 @login_required
+@buyer_required
 def view_cart(request):
     """Display items in the user's cart."""
     cart_items = Cart.objects.filter(user=request.user)
@@ -55,6 +92,7 @@ def view_cart(request):
 
 
 @login_required
+@buyer_required
 def add_to_cart(request, product_id):
     """Add a product to the cart or update quantity if it already exists."""
     if request.user.role == "seller":
@@ -73,6 +111,7 @@ def add_to_cart(request, product_id):
 
 
 @login_required
+@buyer_required
 def remove_from_cart(request, cart_item_id):
     """Remove an item from the cart."""
     cart_item = get_object_or_404(Cart, id=cart_item_id, user=request.user)
@@ -81,6 +120,7 @@ def remove_from_cart(request, cart_item_id):
     return redirect("view_cart")
 
 @login_required
+@buyer_required
 
 def checkout(request):
     # Ensure the user has a cart
@@ -123,7 +163,15 @@ def checkout(request):
 
                 # Initiate payment (add to escrow)
                 if order.initiate_payment():  # Assuming initiate_payment handles payment gateway logic
-                    order.save()  # Save the order only after successful payment
+                    order.save()
+                    
+                for cart_item in cart_items:
+                    OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity,
+                )
+
 
                     # Clear the user's cart after the order is created
                     cart_items.delete()
@@ -143,6 +191,7 @@ def checkout(request):
         "profile": profile,  # Pass the profile to prefill fields if needed
     })
 @login_required
+@buyer_required
 def order_summary(request):
     # Get all orders for the authenticated buyer
     orders = Order.objects.filter(buyer=request.user)
@@ -162,12 +211,22 @@ def order_summary(request):
             
 
             elif action == "reject_delivery":
-                if order.status == Order.PENDING:
-                    order.status = Order.CANCELLED
-                    order.save()
-                    messages.success(request, f"You have rejected delivery for Order #{order.id}.")
-                else:
-                    messages.error(request, f"Order #{order.id} cannot be rejected in its current state.")
+
+                    if order.status == Order.PENDING:
+                        # Update the order status
+                        order.status = Order.CANCELLED
+                        order.save()
+                        
+                        # Automatically create a Dispute entry
+                        Dispute.objects.create(
+                            order=order,
+                            buyer_email=order.buyer.email,  # Email of the buyer from the order
+                            seller_email=order.seller.email,  # Email of the seller from the order
+                        )
+                        
+                        messages.success(request, f"You have rejected delivery for Order #{order.id}. A dispute has been opened.")
+                    else:
+                        messages.error(request, f"Order #{order.id} cannot be rejected in its current state.")
 
             elif action == "cancel_order":
                 if order.status == Order.PENDING:
@@ -190,32 +249,28 @@ def order_summary(request):
     return render(request, "Store/order_summary.html", {"orders": orders})
 
 @login_required
-def add_review(request, order_id):
-    """
-    View to allow users to add a review for a specific order.
-    """
-    order = get_object_or_404(Order, id=order_id, buyer=request.user)  # Ensure the user owns the order
+@buyer_required
+def add_review(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviews = MyReview.objects.filter(product=product)
+    form = ReviewForm(request.POST or None)
 
-    # Check if a review already exists for this order
-    existing_review = MyReviews.objects.filter(order=order, user=request.user).first()
-    if existing_review:
-        messages.warning(request, "You have already submitted a review for this order.")
-        return redirect('order_summary')  # Redirect to order summary or appropriate page
-
-    if request.method == "POST":
-        form = ReviewForm(request.POST)
+    if request.method == 'POST':
         if form.is_valid():
-            # Save the review
-            review = form.save(commit=False)
-            review.user = request.user
-            review.order = order
-            review.save()
-            messages.success(request, "Thank you for your review!")
-            return redirect('order_summary')
-    else:
-        form = ReviewForm()
+            # Create or update the review for the product
+            MyReview.objects.update_or_create(
+                user=request.user,
+                product=product,
+                defaults={
+                    'rating': form.cleaned_data['rating'],
+                    'description': form.cleaned_data['description'],
+                },
+            )
+            return redirect('product_details', id=product_id)  # Adjust to your product details URL name
 
-    return render(request, "Store/add_review.html", {"form": form, "order": order})
+    return render(request, 'Store/add_review.html', {'form': form, 'product': product, 'reviews':reviews})
+
+
 
 @login_required
 def add_to_wishlist(request, product_id):
